@@ -23,7 +23,9 @@ class ReceiptController extends Controller
                 'tank',
                 'product',
                 'tanker',
-            ])->latest()->get()
+            ])
+                ->latest()
+                ->get()
         );
     }
 
@@ -52,5 +54,32 @@ class ReceiptController extends Controller
                 'tanker',
             ])
         );
+    }
+
+    public function show(Receipt $receipt)
+    {
+        return new ReceiptResource(
+            $receipt->load([
+                'tank',
+                'product',
+                'tanker',
+            ])
+        );
+    }
+
+    public function update()
+    {
+        return response()->json([
+            'message' =>
+                'Receipt updates are not allowed.',
+        ], 405);
+    }
+
+    public function destroy()
+    {
+        return response()->json([
+            'message' =>
+                'Receipt deletion is not allowed.',
+        ], 405);
     }
 }

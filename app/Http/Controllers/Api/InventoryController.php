@@ -11,7 +11,10 @@ class InventoryController extends Controller
     public function index(Depot $depot)
     {
         $tanks = $depot->tanks()
-            ->with('product')
+            ->with([
+                'product',
+            ])
+            ->latest()
             ->get();
 
         return InventoryResource::collection(

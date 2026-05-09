@@ -23,7 +23,9 @@ class DispatchController extends Controller
                 'tank',
                 'product',
                 'customer',
-            ])->latest()->get()
+            ])
+                ->latest()
+                ->get()
         );
     }
 
@@ -52,5 +54,32 @@ class DispatchController extends Controller
                 'customer',
             ])
         );
+    }
+
+    public function show(Dispatch $dispatch)
+    {
+        return new DispatchResource(
+            $dispatch->load([
+                'tank',
+                'product',
+                'customer',
+            ])
+        );
+    }
+
+    public function update()
+    {
+        return response()->json([
+            'message' =>
+                'Dispatch updates are not allowed.',
+        ], 405);
+    }
+
+    public function destroy()
+    {
+        return response()->json([
+            'message' =>
+                'Dispatch deletion is not allowed.',
+        ], 405);
     }
 }
