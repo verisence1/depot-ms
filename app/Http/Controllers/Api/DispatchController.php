@@ -3,47 +3,54 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreDispatchRequest;
+use App\Http\Resources\DispatchResource;
+use App\Models\Dispatch;
+use App\Models\Tank;
+use App\Services\TankInventoryService;
 
 class DispatchController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(
+        protected TankInventoryService $inventoryService
+    ) {
+    }
+
     public function index()
     {
-        //
+        return DispatchResource::collection(
+            Dispatch::with([
+                'tank',
+                'product',
+                'customer',
+            ])->latest()->get()
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function store(
+        StoreDispatchRequest $request
+    ) {
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $tank = Tank::findOrFail(
+            $request->tank_id
+        );
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $this->inventoryService->debit(
+            $tank,
+            $request->product_id,
+            $request->volume
+        );
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $dispatch = Dispatch::create(
+            $request->validated()
+        );
+
+        return new DispatchResource(
+            $dispatch->load([
+                'tank',
+                'product',
+                'customer',
+            ])
+        );
     }
 }

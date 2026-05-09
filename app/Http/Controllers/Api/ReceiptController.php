@@ -3,47 +3,54 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreReceiptRequest;
+use App\Http\Resources\ReceiptResource;
+use App\Models\Receipt;
+use App\Models\Tank;
+use App\Services\TankInventoryService;
 
 class ReceiptController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(
+        protected TankInventoryService $inventoryService
+    ) {
+    }
+
     public function index()
     {
-        //
+        return ReceiptResource::collection(
+            Receipt::with([
+                'tank',
+                'product',
+                'tanker',
+            ])->latest()->get()
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function store(
+        StoreReceiptRequest $request
+    ) {
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $tank = Tank::findOrFail(
+            $request->tank_id
+        );
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $this->inventoryService->credit(
+            $tank,
+            $request->product_id,
+            $request->volume
+        );
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $receipt = Receipt::create(
+            $request->validated()
+        );
+
+        return new ReceiptResource(
+            $receipt->load([
+                'tank',
+                'product',
+                'tanker',
+            ])
+        );
     }
 }
