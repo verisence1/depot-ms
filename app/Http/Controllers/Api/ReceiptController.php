@@ -37,6 +37,13 @@ class ReceiptController extends Controller
             $request->tank_id
         );
 
+        if ($tank->depot->status !== 'active') {
+
+            return response()->json([
+                'message' => 'Inactive depots cannot receive inventory.'
+            ], 422);
+        }
+
         if ($tank->product_id !== (int) $request->product_id) {
             return response()->json([
                 'message' => 'Tank product does not match request product.'
@@ -88,6 +95,14 @@ class ReceiptController extends Controller
                     'Only pending receipts can be approved.'
             ], 422);
 
+        }
+
+        if ($receipt->depot->status !== 'active') {
+
+            return response()->json([
+                'message' =>
+                    'Cannot approve receipts for inactive depots.'
+            ], 422);
         }
 
         $tank = $receipt->tank;

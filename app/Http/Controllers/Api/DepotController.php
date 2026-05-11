@@ -51,14 +51,13 @@ class DepotController extends Controller
     ) {
 
         $validated = $request->validate([
-            'name' => ['required', 'string'],
-            'location' => ['required', 'string'],
+            'name' => ['string'],
+            'location' => ['string'],
             'license_number' => [
-                'required',
                 'string',
                 'unique:depots,license_number,' . $depot->id,
             ],
-            'status' => ['required', 'string'],
+            'status' => ['string'],
         ]);
 
         $depot->update($validated);

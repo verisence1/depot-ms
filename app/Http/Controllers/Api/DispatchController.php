@@ -41,6 +41,12 @@ class DispatchController extends Controller
             $request->tank_id
         );
 
+        if ($tank->depot->status !== 'active') {
+            return response()->json([
+                'message' => 'Inactive depots cannot dispatch inventory.'
+            ], 422);
+        }
+
         if ($tank->product_id !== (int) $request->product_id) {
             return response()->json([
                 'message' => 'Tank product does not match request product.'
@@ -92,6 +98,13 @@ class DispatchController extends Controller
             return response()->json([
                 'message' =>
                     'Only pending dispatches can be approved.'
+            ], 422);
+        }
+
+        if ($dispatch->depot->status !== 'active') {
+            return response()->json([
+                'message' =>
+                    'Cannot approve dispatches for inactive depots.'
             ], 422);
         }
 

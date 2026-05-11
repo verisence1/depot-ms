@@ -91,29 +91,24 @@ class TankController extends Controller
 
         $validated = $request->validate([
             'depot_id' => [
-                'required',
                 'exists:depots,id',
             ],
 
             'product_id' => [
-                'required',
                 'exists:products,id',
             ],
 
             'tag' => [
-                'required',
                 'string',
                 'unique:tanks,tag,' . $tank->id,
             ],
 
             'capacity_litres' => [
-                'required',
                 'numeric',
                 'min:1',
             ],
 
             'current_volume' => [
-                'required',
                 'numeric',
                 'min:0',
             ],

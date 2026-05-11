@@ -94,7 +94,6 @@ php artisan serve
 
 The app will be available at `http://127.0.0.1:8000` by default.
 
-
 ## API Endpoints
 
 You can test the API with Postman using the included collection file: `depot-ms.postman_collection.json`.
@@ -159,6 +158,7 @@ This application uses Sanctum in token mode, which is appropriate for a stateles
 - No explicit rate limiting or API versioning strategy is documented.
 
 ## Notes
+
 - If you need a fresh database reset during development:
 
 ```bash
