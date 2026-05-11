@@ -20,6 +20,13 @@ class TankResource extends JsonResource
 
             'fill_percentage' => $this->fill_percentage,
 
+            'depot' => [
+                'id' => $this->depot?->id,
+                'name' => $this->depot?->name,
+                'location' => $this->depot?->location,
+                'statsus' => $this->depot?->status,
+            ],
+
             'product' => [
                 'id' => $this->product?->id,
                 'name' => $this->product?->name,

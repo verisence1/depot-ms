@@ -1,66 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# depot-ms
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 11 API-backed depot management system for receipts, dispatches, inventory, customers, and depot users.
 
-## About Laravel
+## Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project is built as an API-first backend using Laravel 11 and Sanctum token authentication. It models depots, tanks, products, tankers, receipts, dispatches, and customers, with a specific approval flow for depot managers.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+
+- Composer
+- MySQL 8.0+ (recommended)
+- Git
 
-## Learning Laravel
+## Recommended Local Environment
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Install PHP 8.2 or later.
+2. Install Composer.
+3. Install MySQL 8.0+.
+4. Install Git.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Clone the Repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone <repository-url> depot-ms
+cd depot-ms
+```
 
-## Laravel Sponsors
+## Install PHP Dependencies
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+```
 
-### Premium Partners
+## Environment Setup
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Copy the example environment file:
 
-## Contributing
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Generate the application key:
 
-## Code of Conduct
+```bash
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Configure the Database
 
-## Security Vulnerabilities
+Create a MySQL database for the application. Example:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+mysql -u root -p -e "CREATE DATABASE depot_ms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
 
-## License
+Update the `.env` file with your database credentials:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=depot_ms
+DB_USERNAME=root
+DB_PASSWORD=mysql_password
+```
+
+## Run Migrations
+
+```bash
+php artisan migrate
+```
+
+## Seed the Database
+
+The project includes `DatabaseSeeder`, which seeds users, depots, products, customers, tanks, tankers, receipts, and dispatches.
+
+```bash
+php artisan db:seed
+```
+
+If you want to run both migrate and seed in one command:
+
+```bash
+php artisan migrate --seed
+```
+
+## Run the Application
+
+```bash
+php artisan serve
+```
+
+The app will be available at `http://127.0.0.1:8000` by default.
+
+
+## API Endpoints
+
+You can test the API with Postman using the included collection file: `depot-ms.postman_collection.json`.
+
+Authentication:
+
+- `POST /api/register` - register a new user and receive a token
+- `POST /api/login` - login and receive a token
+- `POST /api/logout` - revoke the current token
+
+Protected resources (require `Authorization: Bearer <token>`):
+
+- `api/depots`
+- `api/tanks`
+- `api/receipts`
+- `api/dispatches`
+- `api/customers`
+- `GET /api/depots/{depot}/inventory`
+
+Approval actions (require `Authorization: Bearer <token>`):
+
+- `POST /api/receipts/{receipt}/approve` - depot manager only
+- `POST /api/dispatches/{dispatch}/approve` - depot manager only
+- `POST /api/receipts/{receipt}/reverse`
+- `POST /api/dispatches/{dispatch}/cancel`
+
+## Architecture
+
+- API-first Laravel application using resource controllers.
+- Domain models include `Depot`, `Tank`, `Product`, `Tanker`, `Receipt`, `Dispatch`, `Customer`, and `User`.
+- `TankInventoryService` encapsulates inventory operations and ensures business rules like product matching, overflow protection, and sufficient quantity checks.
+- Role-based approval is enforced with middleware: `EnsureDepotManager` restricts approvals to users whose role is `depot_manager`.
+- Relationships:
+    - Users can be attached to depots via many-to-many links.
+    - Depots own tanks, receipts, and dispatches.
+    - Receipts and dispatches reference tanks, products, tankers, and users for audit tracking.
+
+## Why Sanctum Was Used
+
+Sanctum was chosen because:
+
+- It integrates smoothly with Laravel and requires minimal setup.
+- It supports API token authentication for mobile clients or third-party apps.
+- It allows simple token creation and revocation via `createToken()` and `currentAccessToken()->delete()`.
+- It supports `auth:sanctum` middleware, giving a consistent authentication layer for API routes.
+
+This application uses Sanctum in token mode, which is appropriate for a stateless API and avoids the complexity of session authentication for API consumers.
+
+## Assumptions
+
+- The application is backend-only; there is no built-in frontend shipped in this repo.
+- Depot approval flow is limited to the `depot_manager` role.
+- Inventory is tracked per tank and product; there is no cross-product conversion.
+- Audit metadata fields exist on receipts/dispatches (`created_by`, `approved_by`, `cancelled_by`, etc.).
+- Seeded data uses randomized users and depot assignments, so registered accounts may still be needed for predictable testing.
+
+## Known Gaps
+
+- No deployment or production hardening instructions are included.
+- Advanced RBAC beyond `depot_manager` is not implemented.
+- No frontend/UI package is included by default.
+- No explicit rate limiting or API versioning strategy is documented.
+
+## Notes
+- If you need a fresh database reset during development:
+
+```bash
+php artisan migrate:fresh --seed
+```
