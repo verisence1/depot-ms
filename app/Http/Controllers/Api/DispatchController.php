@@ -22,7 +22,11 @@ class DispatchController extends Controller
             Dispatch::with([
                 'tank',
                 'product',
+                'tanker',
                 'customer',
+                'creator',
+                'approver',
+                'canceller',
             ])
                 ->latest()
                 ->get()
@@ -43,14 +47,16 @@ class DispatchController extends Controller
             $request->volume
         );
 
-        $dispatch = Dispatch::create(
-            $request->validated()
-        );
+        $dispatch = Dispatch::create([
+            ...$request->validated(),
+            'created_by' => auth()->id(),
+        ]);
 
         return new DispatchResource(
             $dispatch->load([
                 'tank',
                 'product',
+                'tanker',
                 'customer',
             ])
         );
@@ -62,7 +68,84 @@ class DispatchController extends Controller
             $dispatch->load([
                 'tank',
                 'product',
+                'tanker',
                 'customer',
+                'creator',
+                'approver',
+                'canceller',
+            ])
+        );
+    }
+
+    public function approve(Dispatch $dispatch)
+    {
+        if ($dispatch->approved_by) {
+
+            return response()->json([
+                'message' => 'Dispatch already approved.'
+            ], 422);
+        }
+
+        $dispatch->update([
+            'approved_by' => auth()->id(),
+            'approved_at' => now(),
+        ]);
+
+        return new DispatchResource(
+            $dispatch->fresh()->load([
+                'tank',
+                'product',
+                'tanker',
+                'customer',
+                'creator',
+                'approver',
+            ])
+        );
+    }
+
+    public function cancel(Dispatch $dispatch)
+    {
+        if ($dispatch->is_cancelled) {
+
+            return response()->json([
+                'message' => 'Dispatch already cancelled.'
+            ], 422);
+        }
+
+        $tank = $dispatch->tank;
+
+        if (
+            ($tank->current_volume + $dispatch->volume)
+            > $tank->capacity_litres
+        ) {
+
+            return response()->json([
+                'message' =>
+                    'Tank capacity exceeded during cancellation.'
+            ], 422);
+        }
+
+        $tank->increment(
+            'current_volume',
+            $dispatch->volume
+        );
+
+        $dispatch->update([
+            'is_cancelled' => true,
+            'cancelled_at' => now(),
+            'cancelled_by' => auth()->id(),
+            'updated_by' => auth()->id(),
+        ]);
+
+        return new DispatchResource(
+            $dispatch->fresh()->load([
+                'tank',
+                'product',
+                'tanker',
+                'customer',
+                'creator',
+                'approver',
+                'canceller',
             ])
         );
     }

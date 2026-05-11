@@ -23,38 +23,38 @@ class DatabaseSeeder extends Seeder
         // $products = Product::factory(3)->create();
 
         $products = collect([
-        Product::create([
-            'name' => 'Petrol',
-            'code' => 'PMS',
-            'category' => 'refined',
-            'flash_point' => 43.00,
-            'density' => 0.74,
-        ]),
+            Product::create([
+                'name' => 'Petrol',
+                'code' => 'PMS',
+                'category' => 'refined',
+                'flash_point' => 43.00,
+                'density' => 0.74,
+            ]),
 
-        Product::create([
-            'name' => 'Diesel',
-            'code' => 'AGO',
-            'category' => 'refined',
-            'flash_point' => 52.00,
-            'density' => 0.85,
-        ]),
+            Product::create([
+                'name' => 'Diesel',
+                'code' => 'AGO',
+                'category' => 'refined',
+                'flash_point' => 52.00,
+                'density' => 0.85,
+            ]),
 
-        Product::create([
-            'name' => 'Kerosene',
-            'code' => 'DPK',
-            'category' => 'refined',
-            'flash_point' => 38.00,
-            'density' => 0.81,
-        ]),
+            Product::create([
+                'name' => 'Kerosene',
+                'code' => 'DPK',
+                'category' => 'refined',
+                'flash_point' => 38.00,
+                'density' => 0.81,
+            ]),
 
-        Product::create([
-            'name' => 'LPG',
-            'code' => 'LPG',
-            'category' => 'lpg',
-            'flash_point' => -104.00,
-            'density' => 0.54,
-        ]),
-    ]);
+            Product::create([
+                'name' => 'LPG',
+                'code' => 'LPG',
+                'category' => 'lpg',
+                'flash_point' => -104.00,
+                'density' => 0.54,
+            ]),
+        ]);
 
         $customers = Customer::factory(5)->create();
 

@@ -18,11 +18,21 @@ class Dispatch extends Model
         'volume',
         'dispatch_date',
         'waybill_no',
+        'created_by',
+        'updated_by',
+        'approved_by',
+        'approved_at',
+        'is_cancelled',
+        'cancelled_at',
+        'cancelled_by',
     ];
 
     protected $casts = [
         'volume' => 'decimal:2',
         'dispatch_date' => 'date',
+        'approved_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+        'is_cancelled' => 'boolean',
     ];
 
     public function depot(): BelongsTo
@@ -48,5 +58,24 @@ class Dispatch extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function canceller()
+    {
+        return $this->belongsTo(User::class, 'cancelled_by');
     }
 }

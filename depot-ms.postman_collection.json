@@ -1,0 +1,598 @@
+{
+    "info": {
+        "_postman_id": "d2d9e6c8-8c35-4b73-8d11-2e7c9f1a0a11",
+        "name": "Depot Management System API",
+        "description": "Comprehensive API collection for the Depot Management System built with Laravel 11 and Sanctum authentication.\n\nThis collection covers:\n\n- Authentication and authorization\n- User registration and login\n- Depot CRUD operations\n- Tank CRUD operations\n- Inventory visibility\n- Fuel receipt lifecycle\n- Fuel dispatch lifecycle\n- Approval workflow\n- Receipt reversal\n- Dispatch cancellation\n- Inventory integrity validation\n- Audit and transactional behavior\n\nThe system follows immutable inventory transaction principles:\n- Receipts cannot be edited/deleted\n- Dispatches cannot be edited/deleted\n- Corrections are handled through reversals and cancellations\n\nApproval endpoints are restricted to depot_manager users.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://127.0.0.1:8000/api"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "description": "Endpoints for user registration, login, and logout. Authentication uses Laravel Sanctum bearer tokens.",
+            "item": [
+                {
+                    "name": "Register User",
+                    "request": {
+                        "method": "POST",
+                        "description": "Creates a new system user and immediately returns a Sanctum access token.\n\nAllowed roles:\n- depot_manager\n- operator\n- auditor",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Depot Manager\",\n  \"email\": \"manager@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\",\n  \"role\": \"depot_manager\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/register",
+                            "host": ["{{base_url}}"],
+                            "path": ["register"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "description": "Authenticates a user and returns a Sanctum bearer token. Use the token in the Authorization header for protected endpoints.",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"manager@example.com\",\n  \"password\": \"password\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "description": "Invalidates the currently authenticated Sanctum token.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/logout",
+                            "host": ["{{base_url}}"],
+                            "path": ["logout"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Depots",
+            "description": "CRUD operations for fuel depots. Depots represent physical fuel storage locations.",
+            "item": [
+                {
+                    "name": "Get Depots",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns all depots with tank counts.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/depots",
+                            "host": ["{{base_url}}"],
+                            "path": ["depots"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Depot",
+                    "request": {
+                        "method": "POST",
+                        "description": "Creates a new depot record.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Nairobi Central Depot\",\n  \"location\": \"Nairobi\",\n  \"license_number\": \"DEPOT-001\",\n  \"status\": \"active\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/depots",
+                            "host": ["{{base_url}}"],
+                            "path": ["depots"]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Single Depot",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns a single depot including eager loaded tanks and products.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/depots/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["depots", "1"]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Depot",
+                    "request": {
+                        "method": "PUT",
+                        "description": "Updates depot information.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Nairobi Depot\",\n  \"location\": \"Industrial Area\",\n  \"license_number\": \"DEPOT-001\",\n  \"status\": \"active\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/depots/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["depots", "1"]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Depot",
+                    "request": {
+                        "method": "DELETE",
+                        "description": "Deletes the specified depot.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/depots/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["depots", "1"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Tanks",
+            "description": "CRUD operations for storage tanks. Tanks are tied to a depot and store a single product.",
+            "item": [
+                {
+                    "name": "Get Tanks",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns all tanks with eager loaded depot and product relationships including fill percentage.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/tanks",
+                            "host": ["{{base_url}}"],
+                            "path": ["tanks"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Tank",
+                    "request": {
+                        "method": "POST",
+                        "description": "Creates a new storage tank. Current volume cannot exceed capacity.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"product_id\": 1,\n  \"tag\": \"TK-001\",\n  \"capacity_litres\": 50000,\n  \"current_volume\": 10000\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/tanks",
+                            "host": ["{{base_url}}"],
+                            "path": ["tanks"]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Single Tank",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns a single tank record with depot and product relationships.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/tanks/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["tanks", "1"]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Tank",
+                    "request": {
+                        "method": "PUT",
+                        "description": "Updates tank details.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"product_id\": 1,\n  \"tag\": \"TK-001\",\n  \"capacity_litres\": 60000,\n  \"current_volume\": 12000\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/tanks/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["tanks", "1"]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Tank",
+                    "request": {
+                        "method": "DELETE",
+                        "description": "Deletes the specified tank.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/tanks/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["tanks", "1"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Inventory",
+            "description": "Inventory visibility endpoints for depot stock monitoring.",
+            "item": [
+                {
+                    "name": "Get Depot Inventory",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns all tanks in a depot including product information, current volume, capacity and fill percentage.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/depots/1/inventory",
+                            "host": ["{{base_url}}"],
+                            "path": ["depots", "1", "inventory"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Receipts",
+            "description": "Inbound inventory transaction endpoints. Receipts increase tank inventory and are immutable after creation.",
+            "item": [
+                {
+                    "name": "Get Receipts",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns all receipt transactions with eager loaded relationships and audit metadata.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/receipts",
+                            "host": ["{{base_url}}"],
+                            "path": ["receipts"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Receipt",
+                    "request": {
+                        "method": "POST",
+                        "description": "Creates a receipt transaction and increases the current volume in the associated tank.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"tank_id\": 1,\n  \"product_id\": 1,\n  \"tanker_id\": 1,\n  \"volume\": 5000,\n  \"receipt_date\": \"2025-01-01\",\n  \"batch_ref\": \"RCPT-1001\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/receipts",
+                            "host": ["{{base_url}}"],
+                            "path": ["receipts"]
+                        }
+                    }
+                },
+                {
+                    "name": "Approve Receipt",
+                    "request": {
+                        "method": "POST",
+                        "description": "Approves a receipt transaction. Only depot_manager users can approve receipts.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/receipts/1/approve",
+                            "host": ["{{base_url}}"],
+                            "path": ["receipts", "1", "approve"]
+                        }
+                    }
+                },
+                {
+                    "name": "Reverse Receipt",
+                    "request": {
+                        "method": "POST",
+                        "description": "Reverses a receipt transaction and removes the receipt volume from the tank inventory while preserving audit history.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/receipts/1/reverse",
+                            "host": ["{{base_url}}"],
+                            "path": ["receipts", "1", "reverse"]
+                        }
+                    }
+                },
+                {
+                    "name": "Overflow Receipt Validation",
+                    "request": {
+                        "method": "POST",
+                        "description": "Attempts to exceed tank capacity. Expected result: validation/business rule failure.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"tank_id\": 1,\n  \"product_id\": 1,\n  \"tanker_id\": 1,\n  \"volume\": 999999,\n  \"receipt_date\": \"2025-01-01\",\n  \"batch_ref\": \"OVERFLOW-TEST\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/receipts",
+                            "host": ["{{base_url}}"],
+                            "path": ["receipts"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Dispatches",
+            "description": "Outbound inventory transaction endpoints. Dispatches reduce tank inventory and remain immutable after creation.",
+            "item": [
+                {
+                    "name": "Get Dispatches",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns all dispatch transactions with eager loaded relationships and audit information.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/dispatches",
+                            "host": ["{{base_url}}"],
+                            "path": ["dispatches"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Dispatch",
+                    "request": {
+                        "method": "POST",
+                        "description": "Creates a dispatch transaction and deducts fuel volume from the tank inventory.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"tank_id\": 1,\n  \"product_id\": 3,\n  \"tanker_id\": 1,\n  \"customer_id\": 1,\n  \"volume\": 2000,\n  \"dispatch_date\": \"2025-01-01\",\n  \"waybill_no\": \"DSP-1001\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/dispatches",
+                            "host": ["{{base_url}}"],
+                            "path": ["dispatches"]
+                        }
+                    }
+                },
+                {
+                    "name": "Approve Dispatch",
+                    "request": {
+                        "method": "POST",
+                        "description": "Approves a dispatch transaction. Only depot_manager users can approve dispatches.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/dispatches/1/approve",
+                            "host": ["{{base_url}}"],
+                            "path": ["dispatches", "1", "approve"]
+                        }
+                    }
+                },
+                {
+                    "name": "Cancel Dispatch",
+                    "request": {
+                        "method": "POST",
+                        "description": "Cancels a dispatch transaction and restores the dispatched fuel volume back into the associated tank.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/dispatches/1/cancel",
+                            "host": ["{{base_url}}"],
+                            "path": ["dispatches", "1", "cancel"]
+                        }
+                    }
+                },
+                {
+                    "name": "Overdraw Dispatch Validation",
+                    "request": {
+                        "method": "POST",
+                        "description": "Attempts to dispatch more fuel than exists in the tank. Expected result: insufficient inventory validation error.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"tank_id\": 1,\n  \"product_id\": 1,\n  \"tanker_id\": 1,\n  \"customer_id\": 1,\n  \"volume\": 999999,\n  \"dispatch_date\": \"2025-01-01\",\n  \"waybill_no\": \"OVERDRAW-TEST\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/dispatches",
+                            "host": ["{{base_url}}"],
+                            "path": ["dispatches"]
+                        }
+                    }
+                },
+                {
+                    "name": "Product Mismatch Validation",
+                    "request": {
+                        "method": "POST",
+                        "description": "Attempts to dispatch a product that does not match the configured tank product. Expected result: product mismatch validation error.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"tank_id\": 1,\n  \"product_id\": 2,\n  \"tanker_id\": 1,\n  \"customer_id\": 1,\n  \"volume\": 1000,\n  \"dispatch_date\": \"2025-01-01\",\n  \"waybill_no\": \"MISMATCH-TEST\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/dispatches",
+                            "host": ["{{base_url}}"],
+                            "path": ["dispatches"]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

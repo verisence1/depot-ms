@@ -26,25 +26,56 @@ Route::middleware('auth:sanctum')
             'logout',
         ]);
 
+        // Depots
+
         Route::apiResource(
             'depots',
             DepotController::class
         );
+
+
+        // Tanks
 
         Route::apiResource(
             'tanks',
             TankController::class
         );
 
+        // Receipts
+
         Route::apiResource(
             'receipts',
             ReceiptController::class
         );
 
+        Route::post(
+            '/receipts/{receipt}/approve',
+            [ReceiptController::class, 'approve']
+        )->middleware('depot.manager');
+
+        Route::post(
+            '/receipts/{receipt}/reverse',
+            [ReceiptController::class, 'reverse']
+        );
+
+        // Dispatches
+
         Route::apiResource(
             'dispatches',
             DispatchController::class
         );
+
+        Route::post(
+            '/dispatches/{dispatch}/approve',
+            [DispatchController::class, 'approve']
+        )->middleware('depot.manager');
+
+        Route::post(
+            '/dispatches/{dispatch}/cancel',
+            [DispatchController::class, 'cancel']
+        );
+
+        // Inventory
 
         Route::get(
             '/depots/{depot}/inventory',

@@ -17,12 +17,22 @@ class Receipt extends Model
         'volume',
         'receipt_date',
         'batch_ref',
+        'created_by',
+        'updated_by',
+        'approved_by',
+        'approved_at',
+        'is_reversed',
+        'reversed_at',
+        'reversed_by',
     ];
 
-    protected $casts = [
-        'volume' => 'decimal:2',
-        'receipt_date' => 'date',
-    ];
+ protected $casts = [
+    'volume' => 'decimal:2',
+    'receipt_date' => 'date',
+    'approved_at' => 'datetime',
+    'reversed_at' => 'datetime',
+    'is_reversed' => 'boolean',
+];
 
     public function depot(): BelongsTo
     {
@@ -42,5 +52,24 @@ class Receipt extends Model
     public function tanker(): BelongsTo
     {
         return $this->belongsTo(Tanker::class);
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function reverser()
+    {
+        return $this->belongsTo(User::class, 'reversed_by');
     }
 }
