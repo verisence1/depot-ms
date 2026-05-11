@@ -35,6 +35,7 @@ class DispatchFactory extends Factory
             'waybill_no' => strtoupper(
                 fake()->unique()->bothify('WB-####')
             ),
+            'status' => 'approved',
         ];
     }
 }

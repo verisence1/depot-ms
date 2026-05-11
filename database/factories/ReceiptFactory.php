@@ -32,6 +32,7 @@ class ReceiptFactory extends Factory
             'batch_ref' => strtoupper(
                 fake()->unique()->bothify('BATCH-####')
             ),
+            'status' => 'approved',
         ];
     }
 }

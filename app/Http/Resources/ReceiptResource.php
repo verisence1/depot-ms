@@ -30,7 +30,7 @@ class ReceiptResource extends JsonResource
 
             // Reversal fields
 
-            'is_reversed' => $this->is_reversed,
+            'status' => $this->status,
             'reversed_by' => $this->reverser?->name,
             'reversed_at' => $this->reversed_at,
         ];

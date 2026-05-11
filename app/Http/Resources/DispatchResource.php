@@ -43,7 +43,7 @@ class DispatchResource extends JsonResource
 
             // Cancellation Fields
 
-            'is_cancelled' => $this->is_cancelled,
+            'status' => $this->status,
 
             'cancelled_by' => $this->canceller?->name,
 

@@ -18,11 +18,11 @@ class Dispatch extends Model
         'volume',
         'dispatch_date',
         'waybill_no',
+        'status',
         'created_by',
         'updated_by',
         'approved_by',
         'approved_at',
-        'is_cancelled',
         'cancelled_at',
         'cancelled_by',
     ];
@@ -32,7 +32,6 @@ class Dispatch extends Model
         'dispatch_date' => 'date',
         'approved_at' => 'datetime',
         'cancelled_at' => 'datetime',
-        'is_cancelled' => 'boolean',
     ];
 
     public function depot(): BelongsTo

@@ -41,15 +41,23 @@ class DispatchController extends Controller
             $request->tank_id
         );
 
-        $this->inventoryService->debit(
-            $tank,
-            $request->product_id,
-            $request->volume
-        );
+        if ($tank->product_id !== (int) $request->product_id) {
+            return response()->json([
+                'message' => 'Tank product does not match request product.'
+            ], 422);
+        }
+
+        if ($request->volume > $tank->current_volume) {
+
+            return response()->json([
+                'message' => 'Insufficient tank inventory for dispatch.'
+            ], 422);
+        }
 
         $dispatch = Dispatch::create([
             ...$request->validated(),
             'created_by' => auth()->id(),
+            'status' => 'pending',
         ]);
 
         return new DispatchResource(
@@ -79,15 +87,27 @@ class DispatchController extends Controller
 
     public function approve(Dispatch $dispatch)
     {
-        if ($dispatch->approved_by) {
+        if ($dispatch->status !== 'pending') {
 
             return response()->json([
-                'message' => 'Dispatch already approved.'
+                'message' =>
+                    'Only pending dispatches can be approved.'
             ], 422);
         }
 
+        $tank = $dispatch->tank;
+
+        $this->inventoryService->debit(
+            $tank,
+            $dispatch->product_id,
+            $dispatch->volume
+        );
+
         $dispatch->update([
+            'status' => 'approved',
+
             'approved_by' => auth()->id(),
+
             'approved_at' => now(),
         ]);
 
@@ -105,10 +125,11 @@ class DispatchController extends Controller
 
     public function cancel(Dispatch $dispatch)
     {
-        if ($dispatch->is_cancelled) {
+        if ($dispatch->status !== 'approved') {
 
             return response()->json([
-                'message' => 'Dispatch already cancelled.'
+                'message' =>
+                    'Only approved dispatches can be cancelled.'
             ], 422);
         }
 
@@ -131,9 +152,12 @@ class DispatchController extends Controller
         );
 
         $dispatch->update([
-            'is_cancelled' => true,
+            'status' => 'cancelled',
+
             'cancelled_at' => now(),
+
             'cancelled_by' => auth()->id(),
+
             'updated_by' => auth()->id(),
         ]);
 

@@ -17,11 +17,11 @@ class Receipt extends Model
         'volume',
         'receipt_date',
         'batch_ref',
+        'status',
         'created_by',
         'updated_by',
         'approved_by',
         'approved_at',
-        'is_reversed',
         'reversed_at',
         'reversed_by',
     ];
@@ -31,7 +31,6 @@ class Receipt extends Model
     'receipt_date' => 'date',
     'approved_at' => 'datetime',
     'reversed_at' => 'datetime',
-    'is_reversed' => 'boolean',
 ];
 
     public function depot(): BelongsTo
