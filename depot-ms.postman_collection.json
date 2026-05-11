@@ -453,6 +453,32 @@
                             "path": ["receipts"]
                         }
                     }
+                },
+                {
+                    "name": "Receipt Product Mismatch Validation",
+                    "request": {
+                        "method": "POST",
+                        "description": "Attempts to create a receipt using a product that does not match the tank product. Expected result: product mismatch validation error.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"depot_id\": 1,\n  \"tank_id\": 1,\n  \"product_id\": 2,\n  \"tanker_id\": 1,\n  \"volume\": 1000,\n  \"receipt_date\": \"2025-01-01\",\n  \"batch_ref\": \"RECEIPT-MISMATCH\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/receipts",
+                            "host": ["{{base_url}}"],
+                            "path": ["receipts"]
+                        }
+                    }
                 }
             ]
         },
@@ -589,6 +615,118 @@
                             "raw": "{{base_url}}/dispatches",
                             "host": ["{{base_url}}"],
                             "path": ["dispatches"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Customers",
+            "description": "CRUD endpoints for customer management. Customers represent organizations or individuals receiving dispatched fuel and include dispatch relationship visibility.",
+            "item": [
+                {
+                    "name": "Get Customers",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns all customers including dispatch counts and related dispatch records.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/customers",
+                            "host": ["{{base_url}}"],
+                            "path": ["customers"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Customer",
+                    "request": {
+                        "method": "POST",
+                        "description": "Creates a new customer record with TIN and credit limit information.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Acme Petroleum Ltd\",\n  \"tin\": \"TIN1234\",\n  \"contact_email\": \"ops@acme.com\",\n  \"credit_limit\": 250000\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/customers",
+                            "host": ["{{base_url}}"],
+                            "path": ["customers"]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Single Customer",
+                    "request": {
+                        "method": "GET",
+                        "description": "Returns a single customer together with all related dispatch transactions.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/customers/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["customers", "1"]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Customer",
+                    "request": {
+                        "method": "PUT",
+                        "description": "Updates customer profile information including TIN, contact email and credit limit.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Acme Petroleum International\",\n  \"tin\": \"TIN1234\",\n  \"contact_email\": \"supply@acme.com\",\n  \"credit_limit\": 500000\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/customers/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["customers", "1"]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Customer",
+                    "request": {
+                        "method": "DELETE",
+                        "description": "Deletes the specified customer record.",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/customers/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["customers", "1"]
                         }
                     }
                 }

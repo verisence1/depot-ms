@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DispatchController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\TankController;
+use App\Http\Controllers\Api\CustomerController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [
@@ -80,5 +81,11 @@ Route::middleware('auth:sanctum')
         Route::get(
             '/depots/{depot}/inventory',
             [InventoryController::class, 'index']
+        );
+
+        // Customers
+        Route::apiResource(
+            'customers',
+            CustomerController::class
         );
     });
