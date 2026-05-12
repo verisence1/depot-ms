@@ -23,7 +23,7 @@ This project is built as an API-first backend using Laravel 11 and Sanctum token
 ## Clone the Repository
 
 ```bash
-git clone <repository-url> depot-ms
+git clone https://github.com/verisence1/depot-ms.git
 cd depot-ms
 ```
 
