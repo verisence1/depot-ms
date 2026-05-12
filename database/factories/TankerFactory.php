@@ -9,23 +9,22 @@ class TankerFactory extends Factory
 {
     public function definition(): array
     {
+        $prefixes = ['KAA', 'KBA', 'KCA', 'KDA', 'KEA'];
+
         return [
             'registration' => strtoupper(
-                fake()->bothify('KAA-####')
+                fake()->randomElement($prefixes) . '-' . fake()->numerify('####')
             ),
-
             'type' => fake()->randomElement([
                 'truck',
                 'vessel',
                 'pipeline',
             ]),
-
             'capacity_litres' => fake()->randomFloat(
                 2,
-                5000,
-                40000
+                12000,
+                60000
             ),
-
             'operator_id' => User::factory(),
         ];
     }

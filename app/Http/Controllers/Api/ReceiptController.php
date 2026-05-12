@@ -63,7 +63,7 @@ class ReceiptController extends Controller
         $receipt = Receipt::create([
             ...$request->validated(),
             'created_by' => auth()->id(),
-            'status' => 'pending',
+            'status' => Receipt::STATUS_PENDING,
         ]);
 
         return new ReceiptResource(
@@ -89,7 +89,7 @@ class ReceiptController extends Controller
 
     public function approve(Receipt $receipt)
     {
-        if ($receipt->status !== 'pending') {
+        if ($receipt->status !== Receipt::STATUS_PENDING) {
             return response()->json([
                 'message' =>
                     'Only pending receipts can be approved.'
@@ -114,7 +114,7 @@ class ReceiptController extends Controller
         );
 
         $receipt->update([
-            'status' => 'approved',
+            'status' => Receipt::STATUS_APPROVED,
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
@@ -132,7 +132,7 @@ class ReceiptController extends Controller
 
     public function reverse(Receipt $receipt)
     {
-        if ($receipt->status !== 'approved') {
+        if ($receipt->status !== Receipt::STATUS_APPROVED) {
 
             return response()->json([
                 'message' =>
@@ -156,12 +156,9 @@ class ReceiptController extends Controller
         );
 
         $receipt->update([
-            'status' => 'reversed',
-
+            'status' => Receipt::STATUS_REVERSED,
             'reversed_at' => now(),
-
             'reversed_by' => auth()->id(),
-
             'updated_by' => auth()->id(),
         ]);
 

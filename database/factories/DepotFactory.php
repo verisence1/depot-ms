@@ -8,13 +8,28 @@ class DepotFactory extends Factory
 {
     public function definition(): array
     {
+        $locations = [
+            'Nairobi',
+            'Mombasa',
+            'Kisumu',
+            'Nakuru',
+            'Eldoret',
+        ];
+
+        $names = [
+            'Central Bulk Depot',
+            'Fuel Storage Terminal',
+            'Distribution Centre',
+            'Aviation Fuel Hub',
+            'Regional Storage Depot',
+        ];
+
+        $location = fake()->randomElement($locations);
+
         return [
-            'name' => fake()->company() . ' Depot',
-
-            'location' => fake()->city(),
-
-            'license_number' => strtoupper(fake()->bothify('LIC-####')),
-
+            'name' => "{$location} " . fake()->randomElement($names),
+            'location' => $location,
+            'license_number' => 'EPRA-' . fake()->numerify('#####'),
             'status' => fake()->randomElement([
                 'active',
                 'inactive',

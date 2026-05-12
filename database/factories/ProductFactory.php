@@ -11,19 +11,31 @@ class ProductFactory extends Factory
         $products = [
             [
                 'name' => 'Petrol',
+                'code' => 'PMS',
                 'category' => 'refined',
+                'flash_point' => 43.00,
+                'density' => 0.74,
             ],
             [
                 'name' => 'Diesel',
+                'code' => 'AGO',
                 'category' => 'refined',
+                'flash_point' => 52.00,
+                'density' => 0.85,
             ],
             [
                 'name' => 'Kerosene',
+                'code' => 'DPK',
                 'category' => 'refined',
+                'flash_point' => 38.00,
+                'density' => 0.81,
             ],
             [
                 'name' => 'LPG',
+                'code' => 'LPG',
                 'category' => 'lpg',
+                'flash_point' => -104.00,
+                'density' => 0.54,
             ],
         ];
 
@@ -31,24 +43,10 @@ class ProductFactory extends Factory
 
         return [
             'name' => $product['name'],
-
-            'code' => strtoupper(
-                fake()->unique()->lexify('PRD???')
-            ),
-
+            'code' => $product['code'],
             'category' => $product['category'],
-
-            'flash_point' => fake()->randomFloat(
-                2,
-                10,
-                100
-            ),
-
-            'density' => fake()->randomFloat(
-                2,
-                0.70,
-                1.20
-            ),
+            'flash_point' => $product['flash_point'],
+            'density' => $product['density'],
         ];
     }
 }

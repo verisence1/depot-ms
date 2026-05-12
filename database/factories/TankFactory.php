@@ -10,22 +10,19 @@ class TankFactory extends Factory
 {
     public function definition(): array
     {
-        $capacity = fake()->randomFloat(2, 5000, 50000);
+        $capacity = fake()->randomFloat(2, 50000, 250000);
+        $currentVolume = fake()->randomFloat(
+            2,
+            $capacity * 0.3,
+            $capacity
+        );
 
         return [
             'depot_id' => Depot::factory(),
-
             'product_id' => Product::factory(),
-
-            'tag' => strtoupper(fake()->bothify('TNK-###')),
-
+            'tag' => strtoupper(fake()->bothify('TK-###')),
             'capacity_litres' => $capacity,
-
-            'current_volume' => fake()->randomFloat(
-                2,
-                0,
-                $capacity
-            ),
+            'current_volume' => min($currentVolume, $capacity),
         ];
     }
 }

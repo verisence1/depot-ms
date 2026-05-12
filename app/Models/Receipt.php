@@ -9,6 +9,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Receipt extends Model
 {
     use HasFactory;
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REVERSED = 'reversed';
+
+    public static function statuses(): array
+    {
+        return [
+            self::STATUS_PENDING,
+            self::STATUS_APPROVED,
+            self::STATUS_REVERSED,
+        ];
+    }
+
     protected $fillable = [
         'depot_id',
         'tank_id',

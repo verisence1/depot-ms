@@ -63,7 +63,7 @@ class DispatchController extends Controller
         $dispatch = Dispatch::create([
             ...$request->validated(),
             'created_by' => auth()->id(),
-            'status' => 'pending',
+            'status' => Dispatch::STATUS_PENDING,
         ]);
 
         return new DispatchResource(
@@ -93,7 +93,7 @@ class DispatchController extends Controller
 
     public function approve(Dispatch $dispatch)
     {
-        if ($dispatch->status !== 'pending') {
+        if ($dispatch->status !== Dispatch::STATUS_PENDING) {
 
             return response()->json([
                 'message' =>
@@ -117,10 +117,8 @@ class DispatchController extends Controller
         );
 
         $dispatch->update([
-            'status' => 'approved',
-
+            'status' => Dispatch::STATUS_APPROVED,
             'approved_by' => auth()->id(),
-
             'approved_at' => now(),
         ]);
 
@@ -138,7 +136,7 @@ class DispatchController extends Controller
 
     public function cancel(Dispatch $dispatch)
     {
-        if ($dispatch->status !== 'approved') {
+        if ($dispatch->status !== Dispatch::STATUS_APPROVED) {
 
             return response()->json([
                 'message' =>
@@ -165,12 +163,9 @@ class DispatchController extends Controller
         );
 
         $dispatch->update([
-            'status' => 'cancelled',
-
+            'status' => Dispatch::STATUS_CANCELLED,
             'cancelled_at' => now(),
-
             'cancelled_by' => auth()->id(),
-
             'updated_by' => auth()->id(),
         ]);
 
