@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DispatchController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\TankController;
+use App\Http\Controllers\Api\TankerController;
 use App\Http\Controllers\Api\CustomerController;
 use Illuminate\Support\Facades\Route;
 
@@ -87,5 +88,11 @@ Route::middleware('auth:sanctum')
         Route::apiResource(
             'customers',
             CustomerController::class
+        );
+
+        // Tankers
+        Route::apiResource(
+            'tankers',
+            TankerController::class
         );
     });
